@@ -27,19 +27,15 @@ public class User {
     @Column(name = "password", nullable = false, length = 30)
     private String password;
 
-
     @Column(name = "email", nullable = false, length = 50)
     private String email;
 
 
-
-    //@JsonIgnore
-    //@JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Patient> patients;
 
     @JsonIgnore
-    @JsonManagedReference
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 }

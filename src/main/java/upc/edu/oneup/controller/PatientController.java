@@ -3,6 +3,7 @@ package upc.edu.oneup.controller;
 import upc.edu.oneup.exception.ValidationException;
 import upc.edu.oneup.model.Device;
 import upc.edu.oneup.model.Patient;
+import upc.edu.oneup.model.Report;
 import upc.edu.oneup.model.User;
 import upc.edu.oneup.repository.UserRepository;
 import upc.edu.oneup.service.PatientService;
@@ -52,6 +53,20 @@ public class PatientController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/patients/{id}/reports")
+    public ResponseEntity<List<Report>> getReportByPatientId(@PathVariable int id) {
+        List<Report> reports = patientService.getReportByPatientId(id);
+        if (reports != null && !reports.isEmpty()) {
+            return new ResponseEntity<>(reports, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+
 
     // Obtiene todos los Patients
     @GetMapping("/patients")

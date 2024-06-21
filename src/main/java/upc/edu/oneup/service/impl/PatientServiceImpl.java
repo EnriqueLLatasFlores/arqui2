@@ -2,11 +2,13 @@ package upc.edu.oneup.service.impl;
 
 import upc.edu.oneup.model.Device;
 import upc.edu.oneup.model.Patient;
+import upc.edu.oneup.model.Report;
 import upc.edu.oneup.repository.PatientRepository;
 import upc.edu.oneup.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.plaf.PanelUI;
 import java.util.List;
 
 @Service
@@ -41,6 +43,10 @@ public class PatientServiceImpl implements PatientService {
     public Device getDeviceByPatientId(int id) {
         return patientRepository.findById(id).get().getDevice();
     }
+
+    @Override
+    public List<Report> getReportByPatientId(int id) {return patientRepository.findById(id).get().getReports();}
+
 
 
 }
