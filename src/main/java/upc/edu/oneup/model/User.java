@@ -27,26 +27,10 @@ public class User {
     @Column(name = "password", nullable = false, length = 30)
     private String password;
 
-    @Column(name = "name", nullable = false, length = 30)
-    private String name;
-
-    @Column(name = "lastname", nullable = false, length = 30)
-    private String lastname;
 
     @Column(name = "email", nullable = false, length = 50)
     private String email;
 
-    @Column(name = "phone", nullable = false, length = 9)
-    private String phone;
-
-    @Column(name = "type", nullable =false , length = 15)
-    private String type;
-
-    @Column(name="image", nullable = true,length=50000)
-    private String image;
-
-    @Column(name = "gender", nullable = false, length = 15)
-    private String gender;
 
 
     //@JsonIgnore

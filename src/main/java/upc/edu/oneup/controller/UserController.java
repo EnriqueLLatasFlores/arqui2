@@ -97,21 +97,11 @@ public class UserController {
             throw new ValidationException("Password must not be empty and must not be more than 30 characters");
         }
 
-        if (user.getName() != null && (user.getName().trim().isEmpty() || user.getName().length() > 30)) {
-            throw new ValidationException("Name must not be empty and must not be more than 30 characters");
-        }
-
-        if (user.getLastname() != null && (user.getLastname().trim().isEmpty() || user.getLastname().length() > 30)) {
-            throw new ValidationException("Lastname must not be empty and must not be more than 30 characters");
-        }
 
         if (user.getEmail() != null && (user.getEmail().trim().isEmpty() || user.getEmail().length() > 50)) {
             throw new ValidationException("Email must not be empty and must not be more than 50 characters");
         }
 
-        if (user.getPhone() != null && (user.getPhone().trim().isEmpty() || user.getPhone().length() > 9)) {
-            throw new ValidationException("Phone must not be empty and must not be more than 9 characters");
-        }
 
 
     }
