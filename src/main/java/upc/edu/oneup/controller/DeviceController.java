@@ -22,6 +22,7 @@ import java.util.List;
 @Tag(name = "Devices", description = "the Devices API")
 @RestController
 @RequestMapping("/api/oneup/v1")
+@CrossOrigin(origins = "*")
 public class DeviceController {
     private final DeviceService  deviceService;
     private final UserService userService;
