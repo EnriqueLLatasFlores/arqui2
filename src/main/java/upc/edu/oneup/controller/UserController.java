@@ -18,7 +18,7 @@ import java.util.Map;
 @Tag(name = "Users", description = "the user API")
 @RestController
 @RequestMapping("/api/oneup/v1")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
 

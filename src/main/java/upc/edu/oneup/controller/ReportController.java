@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "Reports", description = "the report API")
 @RestController
 @RequestMapping("/api/oneup/v1")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class ReportController {
     private final ReportService reportService;
     private final UserService userService;

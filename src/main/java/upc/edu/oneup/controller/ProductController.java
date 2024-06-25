@@ -21,7 +21,7 @@ import java.util.List;
 @Tag(name = "Products", description = "the product API")
 @RestController
 @RequestMapping("/api/oneup/v1")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class ProductController {
 
     private final ProductService productService;

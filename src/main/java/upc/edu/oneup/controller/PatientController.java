@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "Patients", description = "the Patient API")
 @RestController
 @RequestMapping("/api/oneup/v1") //@RequestMapping("/api/oneup/v1")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class PatientController {
     private final PatientService patientService;
     private final UserService userService;

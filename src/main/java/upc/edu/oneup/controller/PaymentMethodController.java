@@ -15,7 +15,7 @@ import java.util.List;
 @Tag(name = "PaymentMethods", description = "the payment methods API")
 @RestController
 @RequestMapping("/api/oneup/v1") //@RequestMapping("/api/oneup/v1")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class PaymentMethodController {
     private final PaymentMethodService paymentMethodService;
     private final UserRepository userRepository;
