@@ -41,6 +41,9 @@ public class Patient {
     @Size(max = 15)
     private String date;
 
+    @Column(name = "phone", nullable = false, length = 30)
+    private String phone;
+
     @Column(name="weight",nullable = false,length = 10)
     @NotNull
     @DecimalMin("0.1")

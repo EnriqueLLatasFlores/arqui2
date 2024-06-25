@@ -13,4 +13,7 @@ public interface PatientService {
     void deletePatient(int id);
     Device getDeviceByPatientId(int id);
     List<Report> getReportByPatientId(int id);
+    Patient updatePatient(Patient patient);
+
+    boolean userHasPatient(int userId); // Nuevo método
 }

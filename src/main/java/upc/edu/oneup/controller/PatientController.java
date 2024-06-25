@@ -77,14 +77,21 @@ public class PatientController {
 
     // Crea el Patient
     @PostMapping("/patients/{userId}")
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient, @PathVariable int userId) {
-    User user = userRepository.findById(userId)
-                                .orElseThrow(() -> new ValidationException("User not found"));
-    patient.setDevice(null);
-    patient.setUser(user);
-    Patient newPatient = patientService.savePatient(patient);
-    return new ResponseEntity<>(newPatient, HttpStatus.CREATED);
-}
+    public ResponseEntity<?> createPatient(@RequestBody Patient patient, @PathVariable int userId) {
+        // Verifica si el usuario ya tiene un paciente asociado
+        if (patientService.userHasPatient(userId)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("El usuario ya tiene un paciente asociado.");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ValidationException("User not found"));
+        patient.setDevice(null);
+        patient.setUser(user);
+        Patient newPatient = patientService.savePatient(patient);
+        return new ResponseEntity<>(newPatient, HttpStatus.CREATED);
+    }
+
 
     //elimina el patient por ID
     @DeleteMapping("/patients/{id}")
@@ -92,4 +99,18 @@ public class PatientController {
         patientService.deletePatient(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
+    @PutMapping("/patients/{id}")
+    public ResponseEntity<Patient> updatePatient(@PathVariable int id, @RequestBody Patient updatedPatient) {
+        Patient existingPatient = patientService.getPatientById(id);
+        if (existingPatient != null) {
+            updatedPatient.setId(id); // Asegura que el ID del paciente sea el mismo que el recibido
+            Patient savedPatient = patientService.updatePatient(updatedPatient);
+            return new ResponseEntity<>(savedPatient, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

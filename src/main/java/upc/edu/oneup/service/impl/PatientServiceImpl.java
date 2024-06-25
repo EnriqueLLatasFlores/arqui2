@@ -48,5 +48,36 @@ public class PatientServiceImpl implements PatientService {
     public List<Report> getReportByPatientId(int id) {return patientRepository.findById(id).get().getReports();}
 
 
+    @Override
+    public Patient updatePatient(Patient updatedPatient) {
+        int id = updatedPatient.getId();
+        Patient existingPatient = patientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Patient not found with id: " + id));
+
+        // Actualizar los campos que se pueden cambiar
+        existingPatient.setName(updatedPatient.getName());
+        existingPatient.setAddress(updatedPatient.getAddress());
+        existingPatient.setDate(updatedPatient.getDate());
+        existingPatient.setPhone(updatedPatient.getPhone());
+        existingPatient.setWeight(updatedPatient.getWeight());
+        existingPatient.setHeight(updatedPatient.getHeight());
+
+        // Mantener el id_user existente si no se proporciona en updatedPatient
+        if (updatedPatient.getUser() == null) {
+            existingPatient.setUser(existingPatient.getUser());
+        } else {
+            existingPatient.setUser(updatedPatient.getUser());
+        }
+
+        // Guardar y devolver el paciente actualizado
+        return patientRepository.save(existingPatient);
+    }
+
+
+    @Override
+    public boolean userHasPatient(int userId) {
+        return patientRepository.existsByUserId(userId);
+    }
+
 
 }

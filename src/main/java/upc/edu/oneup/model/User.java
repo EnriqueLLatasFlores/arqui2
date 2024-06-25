@@ -21,15 +21,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+
     @Column(name = "username", nullable = false, length = 30)
     private String username;
+
+    @Column(name = "name", nullable = false, length = 30)
+    private String name;
+
+    @Column(name = "lastname", nullable = false, length = 30)
+    private String lastname;
+
+    @Column(name = "phone", nullable = false, length = 30)
+    private String phone;
 
     @Column(name = "password", nullable = false, length = 30)
     private String password;
 
     @Column(name = "email", nullable = false, length = 50)
     private String email;
-
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
