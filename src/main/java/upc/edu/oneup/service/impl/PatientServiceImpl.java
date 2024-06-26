@@ -54,13 +54,25 @@ public class PatientServiceImpl implements PatientService {
         Patient existingPatient = patientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Patient not found with id: " + id));
 
-        // Actualizar los campos que se pueden cambiar
-        existingPatient.setName(updatedPatient.getName());
-        existingPatient.setAddress(updatedPatient.getAddress());
-        existingPatient.setDate(updatedPatient.getDate());
-        existingPatient.setPhone(updatedPatient.getPhone());
-        existingPatient.setWeight(updatedPatient.getWeight());
-        existingPatient.setHeight(updatedPatient.getHeight());
+        // Actualizar solo los campos que no son nulos en updatedPatient
+        if (updatedPatient.getName() != null) {
+            existingPatient.setName(updatedPatient.getName());
+        }
+        if (updatedPatient.getAddress() != null) {
+            existingPatient.setAddress(updatedPatient.getAddress());
+        }
+        if (updatedPatient.getDate() != null) {
+            existingPatient.setDate(updatedPatient.getDate());
+        }
+        if (updatedPatient.getPhone() != null) {
+            existingPatient.setPhone(updatedPatient.getPhone());
+        }
+        if (updatedPatient.getWeight() != null) {
+            existingPatient.setWeight(updatedPatient.getWeight());
+        }
+        if (updatedPatient.getHeight() != null) {
+            existingPatient.setHeight(updatedPatient.getHeight());
+        }
 
         // Mantener el id_user existente si no se proporciona en updatedPatient
         if (updatedPatient.getUser() == null) {
