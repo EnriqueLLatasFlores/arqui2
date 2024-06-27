@@ -5,6 +5,7 @@ import upc.edu.oneup.exception.ValidationException;
 import upc.edu.oneup.model.Patient;
 import upc.edu.oneup.model.Report;
 import upc.edu.oneup.repository.PatientRepository;
+import upc.edu.oneup.service.PatientService;
 import upc.edu.oneup.service.ReportService;
 import upc.edu.oneup.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,12 +23,14 @@ import java.util.List;
 //@CrossOrigin(origins = "*")
 public class ReportController {
     private final ReportService reportService;
+    private final PatientService patientService;
     private final UserService userService;
     private final PatientRepository patientRepository;
 
     @Autowired
-    public ReportController(ReportService reportService, UserService userService, PatientRepository patientRepository) {
+    public ReportController(ReportService reportService, UserService userService, PatientRepository patientRepository,PatientService patientService) {
         this.reportService = reportService;
+        this.patientService=patientService;
         this.userService = userService;
         this.patientRepository = patientRepository;
     }
@@ -71,7 +74,8 @@ public class ReportController {
                  .orElseThrow(() -> new ValidationException("Patient not found"));
         report.setPatient(patient);
         validateReport(report);
-        notFoundUser(report.getPatient().getId());
+        notFoundPatient(report.getPatient().getId());
+      //  notFoundUser(report.getPatient().getId());
         return new ResponseEntity<>(reportService.saveReport(report), HttpStatus.CREATED);
     }
 
@@ -94,6 +98,12 @@ public class ReportController {
     private void notFoundUser(int id) {
         if (userService.getUserById(id) == null) {
             throw new ResourceNotFoundException("User with id: " + id + " not found");
+        }
+    }
+
+    private void notFoundPatient(int id) {
+        if (patientService.getPatientById(id) == null) {
+            throw new ResourceNotFoundException("Patient with id: " + id + " not found");
         }
     }
 
