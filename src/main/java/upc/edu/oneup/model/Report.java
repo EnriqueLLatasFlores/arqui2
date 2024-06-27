@@ -40,9 +40,8 @@ public class    Report {
     private String latitude;
 
     @Column(name = "report_time", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP) // Especifica el tipo de temporalidad de la fecha
-    private Date reportTime; // Campo para almacenar la fecha y hora del reporte
-
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportTime;
 
     @JsonIgnore
     @JsonManagedReference
