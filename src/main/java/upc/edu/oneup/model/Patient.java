@@ -68,7 +68,7 @@ public class Patient {
     private Device device;
 
 
-   
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Report> reports;
 }

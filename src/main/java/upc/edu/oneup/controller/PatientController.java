@@ -81,7 +81,7 @@ public class PatientController {
         // Verifica si el usuario ya tiene un paciente asociado
         if (patientService.userHasPatient(userId)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("El usuario ya tiene un paciente asociado.");
+                    .body("The user already has an associated patient.");
         }
 
         User user = userRepository.findById(userId)
