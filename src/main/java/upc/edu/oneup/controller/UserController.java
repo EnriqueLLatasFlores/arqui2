@@ -1,7 +1,7 @@
 package upc.edu.oneup.controller;
 
+import upc.edu.oneup.exception.ResourceNotFoundException;
 import upc.edu.oneup.exception.ValidationException;
-import upc.edu.oneup.model.Patient;
 import upc.edu.oneup.model.User;
 import upc.edu.oneup.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,11 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Users", description = "the user API")
+@Tag(name = "Users", description = "The User API")
 @RestController
-@RequestMapping("/api/oneup/v1")
-//@CrossOrigin(origins = "*")
+@RequestMapping("/api/oneup/v1/users")
 public class UserController {
+
     private final UserService userService;
 
     @Autowired
@@ -27,7 +27,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user/authenticate")
+    // Endpoint: POST /api/oneup/v1/users/authenticate
+    // Autenticación de usuario
+    @PostMapping("/authenticate")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
         String username = credentials.get("username");
         String password = credentials.get("password");
@@ -38,57 +40,65 @@ public class UserController {
             Map<String, String> response = new HashMap<>();
             response.put("id", String.valueOf(user.getId()));
             response.put("username", user.getUsername());
-            response.put("password", user.getPassword());
-
+            response.put("email", user.getEmail());
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
-    @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    // Endpoint: GET /api/oneup/v1/users
+    // Obtiene todos los usuarios
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
-/*
-    @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable int id) {
-        return userService.getUserById(id);
-    }*/
 
-    @GetMapping("/users/{username}/patients")
-    public List<Patient> getPatientsByUsername(@PathVariable String username) {
+    // Endpoint: GET /api/oneup/v1/users/username/{username}
+    // Obtiene un usuario por su username
+    @GetMapping("/username/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
-        return userService.getPatientsByUserId(user.getId());
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-
-    @PostMapping("/users")
+    // Endpoint: POST /api/oneup/v1/users
+    // Crea un nuevo usuario
+    @PostMapping
     @Transactional
-    public User createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         validateUser(user);
-        return userService.createUser(user);
+        User newUser = userService.createUser(user);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/users/username/{username}")
+    // Endpoint: PUT /api/oneup/v1/users/username/{username}
+    // Actualiza un usuario existente por su username
+    @PutMapping("/username/{username}")
     @Transactional
-    public User updateUserByUsername(@PathVariable String username, @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUserByUsername(@PathVariable String username, @RequestBody User updatedUser) {
         validateUser(updatedUser);
-        return userService.updateUserByUsername(username, updatedUser);
+        User updated = userService.updateUserByUsername(username, updatedUser);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @DeleteMapping("users/{id}")
+    // Endpoint: DELETE /api/oneup/v1/users/{id}
+    // Elimina un usuario por ID
+    @DeleteMapping("/{id}")
     @Transactional
-    public void deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            userService.deleteUser(id);
+            return new ResponseEntity<>("User with ID " + id + " was deleted", HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("User with ID " + id + " not found");
+        }
     }
 
-    @GetMapping("/users/username/{username}")
-    public User getUserByUsername(@PathVariable String username) {
-        return userService.getUserByUsername(username);
-    }
-
-    public void validateUser(User user) {
+    // Método para validar datos del usuario
+    private void validateUser(User user) {
         if (user.getUsername() != null && (user.getUsername().trim().isEmpty() || user.getUsername().length() > 30)) {
             throw new ValidationException("Username must not be empty and must not be more than 30 characters");
         }
@@ -97,7 +107,6 @@ public class UserController {
             throw new ValidationException("Password must not be empty and must not be more than 30 characters");
         }
 
-
         if (user.getEmail() != null && (user.getEmail().trim().isEmpty() || user.getEmail().length() > 50)) {
             throw new ValidationException("Email must not be empty and must not be more than 50 characters");
         }
@@ -105,8 +114,5 @@ public class UserController {
         if (userService.isUsernameTaken(user.getUsername())) {
             throw new ValidationException("Username is already taken");
         }
-
-
-
     }
 }

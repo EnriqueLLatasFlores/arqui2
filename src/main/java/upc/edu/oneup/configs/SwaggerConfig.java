@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "One UP",
+                title = "Smart",
                 version = "1.0.0",
-                description = "Backend COnfiguration for ElderlyCare products and services."
+                description = "Backend COnfiguration for Smart products and services."
         )
 )
 public class SwaggerConfig {

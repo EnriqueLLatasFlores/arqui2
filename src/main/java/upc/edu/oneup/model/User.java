@@ -25,11 +25,7 @@ public class User {
     @Column(name = "username", nullable = false, length = 30)
     private String username;
 
-    @Column(name = "name", nullable = false, length = 30)
-    private String name;
 
-    @Column(name = "lastname", nullable = false, length = 30)
-    private String lastname;
 
     @Column(name = "phone", nullable = false, length = 30)
     private String phone;
@@ -42,10 +38,16 @@ public class User {
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Patient> patients;
+    private List<Order> orders;
 
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Store> stores;
+
+
 }

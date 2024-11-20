@@ -1,120 +1,86 @@
 package upc.edu.oneup.controller;
 
+import upc.edu.oneup.exception.ResourceNotFoundException;
 import upc.edu.oneup.exception.ValidationException;
-import upc.edu.oneup.model.Patient;
-import upc.edu.oneup.model.PaymentMethod;
 import upc.edu.oneup.model.Product;
 import upc.edu.oneup.model.User;
-import upc.edu.oneup.repository.PaymentMethodRepository;
-import upc.edu.oneup.repository.UserRepository;
 import upc.edu.oneup.service.ProductService;
+import upc.edu.oneup.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import upc.edu.oneup.service.UserService;
 
 import java.util.List;
 
-@Tag(name = "Products", description = "the product API")
+@Tag(name = "Products", description = "The Product API")
 @RestController
-@RequestMapping("/api/oneup/v1")
-//@CrossOrigin(origins = "*")
+@RequestMapping("/api/oneup/v1/products")
 public class ProductController {
 
     private final ProductService productService;
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
 
     @Autowired
-    public ProductController(ProductService productService, UserService userService, UserRepository userRepository, PaymentMethodRepository paymentMethodRepository) {
+    public ProductController(ProductService productService, UserService userService) {
         this.productService = productService;
         this.userService = userService;
-        this.userRepository = userRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
     }
 
-    // EndPoint: /api/oneup/v1/products
-    // Method: GET
-    // Obtiene todos los Products
+    // Endpoint: GET /api/oneup/v1/products/{username}
+    // Obtiene todos los productos asociados a un usuario
     @Transactional(readOnly = true)
-    @GetMapping("/products")
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+    @GetMapping("/{username}")
+    public ResponseEntity<List<Product>> getProductsByUsername(@PathVariable String username) {
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with username " + username + " not found");
+        }
+        List<Product> products = productService.getProductsByUserId(user.getId());
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    // EndPoint: /api/oneup/v1/products/{id}
-    // Method: GET
-    // Obtiene el Product por ID
-    @Transactional(readOnly = true)
-    @GetMapping("/products/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable int id) {
-        return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
-    }
-
-    // EndPoint: /api/oneup/v1/products
-    // Method: POST
-    // Crea el Product
+    // Endpoint: POST /api/oneup/v1/products/{username}
+    // Crea un nuevo producto asociado a un usuario
     @Transactional
-    @PostMapping("/products/{paymentMethodId}")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product, @PathVariable int paymentMethodId) {
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                .orElseThrow(() -> new ValidationException("PaymentMethod not found"));
-
-        User user = paymentMethod.getUser();
-
-        product.setUser(user);
-        product.setPaymentMethod(paymentMethod);
-
+    @PostMapping("/{username}")
+    public ResponseEntity<Product> createProduct(@RequestBody Product product, @PathVariable String username) {
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with username " + username + " not found");
+        }
+        validateProduct(product);
+        product.setUser(user); // Asocia el producto al usuario
         Product newProduct = productService.saveProduct(product);
-        validateProduct(newProduct);
-        existsProductByProductName(newProduct);
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
 
-    // EndPoint: /api/oneup/v1/products/{id}
-    // Method: PUT
-    // Actualiza el Product
+    // Endpoint: DELETE /api/oneup/v1/products/{id}
+    // Elimina un producto por ID
     @Transactional
-    @PutMapping("/products/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable int id, @RequestBody Product product) {
-        Product newProduct = productService.updateProduct(id, product);
-        User user = userRepository.findById(product.getUser().getId())
-                                    .orElseThrow(() -> new ValidationException("User not found"));
-        product.setUser(user);
-        validateProduct(product);
-        return new ResponseEntity<>(newProduct, HttpStatus.OK);
-    }
-
-    // EndPoint: /api/oneup/v1/products/{id}
-    // Method: DELETE
-    // Elimina el Product por ID
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable int id) {
-        productService.deleteProduct(id);
-        return new ResponseEntity<>("Product with id: " + id + " was deleted", HttpStatus.OK);
+        Product existingProduct = productService.getProductById(id);
+        if (existingProduct != null) {
+            productService.deleteProduct(id);
+            return new ResponseEntity<>("Product with id: " + id + " was deleted", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        }
     }
 
-    //valid que el producto tenga nombre, descripcion y precio
-    public void validateProduct(Product product) {
+    // Validaciones para el producto
+    private void validateProduct(Product product) {
         if (product.getProductName() == null || product.getProductName().trim().isEmpty()) {
             throw new ValidationException("Product name is required");
         }
-        if (product.getProductDescription() == null || product.getProductDescription().trim().isEmpty()) {
-            throw new ValidationException("Product description is required");
-        }
         if (product.getProductPrice() == null || product.getProductPrice() <= 0) {
-            throw new ValidationException("Product price is required");
+            throw new ValidationException("Product price is required and must be greater than 0");
         }
-    }
-
-    //valid que no exista un producto con el mismo nombre
-    private void existsProductByProductName(Product product) {
-        if (productService.getProductByProductName(product.getProductName()) == null) {
-            throw new ValidationException("Product name already exists");
+        if (product.getProductImageUrl() == null || product.getProductImageUrl().trim().isEmpty()) {
+            throw new ValidationException("Product image URL is required");
         }
     }
 }

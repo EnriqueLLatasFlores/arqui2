@@ -8,9 +8,6 @@ public interface ProductService {
     List<Product> getAllProducts();
     Product getProductById(int id);
     Product saveProduct(Product product);
-    Product updateProduct(int id, Product product);
     void deleteProduct(int id);
-
-    Product getProductByProductName(String productName);
-
+    List<Product> getProductsByUserId(int userId); // Nuevo método
 }

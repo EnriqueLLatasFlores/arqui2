@@ -10,6 +10,7 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
 
     @Autowired
@@ -33,30 +34,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(int id, Product product) {
-        Product productToUpdate = productRepository.findById(id).orElse(null);
-        if (productToUpdate != null) {
-            productToUpdate.setProductName(product.getProductName());
-            productToUpdate.setProductDescription(product.getProductDescription());
-            productToUpdate.setProductPrice(product.getProductPrice());
-            productToUpdate.setProductImageUrl(product.getProductImageUrl());
-            return productRepository.save(productToUpdate);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void deleteProduct(int id) {
         productRepository.deleteById(id);
     }
 
     @Override
-    public Product getProductByProductName(String productName) {
-        return productRepository.findByProductName(productName);
+    public List<Product> getProductsByUserId(int userId) {
+        return productRepository.findByUserId(userId);
     }
-
-
-
-
 }
