@@ -18,6 +18,7 @@ import java.util.Map;
 @Tag(name = "Users", description = "The User API")
 @RestController
 @RequestMapping("/api/oneup/v1/users")
+@CrossOrigin(origins = "https://charming-purpose-production.up.railway.app") // Permite solicitudes desde el dominio de producción
 public class UserController {
 
     private final UserService userService;
@@ -49,6 +50,7 @@ public class UserController {
 
     // Endpoint: GET /api/oneup/v1/users
     // Obtiene todos los usuarios
+    
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
